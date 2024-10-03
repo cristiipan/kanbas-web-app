@@ -11,9 +11,13 @@ export default function AssignmentEditor() {
       <label htmlFor="wd-name">Assignment Name</label>
       <input id="wd-name" value={`Assignment ${assignmentId}`} /><br /><br />
 
-      <textarea id="wd-description" rows={4} cols={50}>
-        This is the description for assignment {assignmentId}.
-      </textarea>
+      <textarea
+        id="wd-description"
+        rows={4}
+        cols={50}
+        value={`This is the description for assignment ${assignmentId}.`}
+        onChange={() => {}}
+      />
       <br /><br />
 
       <table>
