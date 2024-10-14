@@ -1,0 +1,39 @@
+/* 1. 默认链接样式 */
+.wd-account-link {
+    font-size: 1.3rem; /* 增大字体 */
+    color: red; /* 默认颜色为红色 */
+    text-decoration: none; /* 去掉下划线 */
+    border: none; /* 去掉边框 */
+    background-color: transparent; /* 去掉默认背景 */
+    transition: color 0.3s ease, border-left 0.3s ease; /* 增加平滑过渡效果 */
+    padding: 10px; /* 给链接增加一些内边距 */
+    display: block;
+    position: relative; /* 相对定位 */
+  }
+  
+  /* 2. 悬停时效果 */
+  .wd-account-link:hover {
+    color: darkred;
+  }
+  
+  /* 3. 点击时（active 状态），字体变黑且左侧显示竖线 */
+  .wd-account-link:active, .wd-account-link.active {
+    color: black;
+    background-color: transparent; /* 去掉蓝色背景 */
+    border-left: 4px solid black; /* 左侧显示黑色竖线 */
+    padding-left: 6px; /* 增加左侧内边距以适应竖线 */
+  }
+
+  /* 4. Sidebar 的样式调整，增加右侧间距 */
+.wd-account-nav {
+    width: 120px; /* 控制 sidebar 宽度 */
+    margin-right: 10px; /* 增加右侧与内容之间的间距 */
+  }
+  
+  /* 5. 页面内容的样式，确保内容部分和 sidebar 分离 */
+  .wd-account-content {
+    flex-grow: 1; /* 让内容部分自动填充剩余空间 */
+    padding-left: 10px; /* 可以根据需要增加 padding */
+  }
+  
+  

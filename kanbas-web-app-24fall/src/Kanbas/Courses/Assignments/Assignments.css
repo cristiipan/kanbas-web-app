@@ -1,0 +1,64 @@
+/* Assignments.css */
+
+/* remove Dropdown.Toggle default bg color and border */
+.custom-dropdown-toggle {
+    background-color: transparent !important;
+    color: black;
+    text-decoration: none;
+  }
+  
+  /* for it to stay without bg when activated */
+  .custom-dropdown-toggle:active,
+  .custom-dropdown-toggle.show {
+    background-color: transparent !important;
+    color: black !important;
+  }
+  
+  /* remove Dropdown.Item default bg color */
+  .custom-dropdown-item {
+    background-color: transparent !important;
+    color: black !important;
+  }
+  
+  /* for Dropdown.Item bg stay unchanged when activated */
+  .custom-dropdown-item:active,
+  .custom-dropdown-item.active {
+    background-color: transparent !important;
+    color: black !important;
+  }
+
+  .custom-save-btn {
+    background-color: rgba(209, 6, 6, 0.77);
+    color: white;
+    border: none;
+  }
+  
+  .custom-save-btn:hover {
+    background-color: rgb(113, 8, 8);
+  }
+  
+  .custom-save-btn:active {
+    background-color: white;
+    color: rgb(243, 225, 225);
+    border: 1px solid rgb(110, 13, 13);
+  }
+  
+.breadcrumb-link {
+    font-size: 1.5rem;
+    color: rgba(209, 6, 6, 0.77);
+    text-decoration: none; /* remove underline */
+  }
+  
+  .breadcrumb-link:hover {
+    color: black;
+  }
+  
+  .breadcrumb-item.active {
+    font-size: 1.5rem;
+    color: black;
+  }
+
+  .breadcrumb-item + .breadcrumb-item::before {
+    content: ''; /* remove default separation "/" */
+  }
+  

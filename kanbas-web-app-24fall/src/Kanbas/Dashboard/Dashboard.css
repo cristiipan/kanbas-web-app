@@ -1,0 +1,14 @@
+.wd-dashboard-course-title {
+    display: block;        /* 确保它是块级元素 */
+    height: 1.5em;         /* 设置为两行的高度 (基于行高 1.25em) */
+    line-height: 1.25em;   /* 每行的高度 */
+    overflow: hidden;      /* 如果内容超出两行，隐藏它 */
+    text-overflow: ellipsis; /* 使超出部分显示省略号 */
+    white-space: normal;   /* 确保文字正常换行 */
+}
+
+.wd-dashboard-course-title.card-text {
+    white-space: nowrap;      /* 禁止换行，确保文本保持一行 */
+    overflow: hidden;         /* 隐藏超出部分 */
+    text-overflow: ellipsis;  /* 超出部分显示省略号 */
+}

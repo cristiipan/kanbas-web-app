@@ -5,18 +5,17 @@ import KanbasNavigation from "./Navigation";
 import Courses from "./Courses";
 import Assignments from "./Courses/Assignments";
 import AssignmentEditor from "./Courses/Assignments/Editor";
+import "./styles.css";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { FaAlignJustify } from 'react-icons/fa';
 
 export default function Kanbas() {
     return (
-      <div id="wd-kanbas">
-        <table>
-          <tr>
-            <td valign="top">
+      <div id="wd-kanbas" className="d-flex">
               <KanbasNavigation />
-            </td>
-            <td valign="top">
+            <div className="wd-main-content-offset p-3">
               <Routes>
-                <Route path="/" element={<Navigate to="/Kanbas/Account" />} />
+                <Route path="/" element={<Navigate to="/Kanbas/Dashboard" />} />
                 <Route path="/Account/*" element={<Account />} />
                 <Route path="/Dashboard" element={<Dashboard />} />
                 <Route path="/Courses/:cid/*" element={<Courses />} />
@@ -25,9 +24,7 @@ export default function Kanbas() {
                 <Route path="/Courses/:courseId/Assignments/:assignmentId" element={<AssignmentEditor />} />
                 <Route path="/Courses/:courseId/Assignments" element={<Assignments />} />
               </Routes>
-            </td>
-          </tr>
-        </table>
+            </div>
       </div>
   );}
   

@@ -2,6 +2,7 @@ import React from 'react';
 import Kanbas from "./Kanbas";
 import Labs from "./Labs/index";
 import { HashRouter, Route, Routes, Navigate } from "react-router-dom";
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
 function App() {
