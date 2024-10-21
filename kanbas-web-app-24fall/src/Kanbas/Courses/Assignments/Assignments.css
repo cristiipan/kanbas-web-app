@@ -31,6 +31,10 @@
     background-color: rgba(209, 6, 6, 0.77);
     color: white;
     border: none;
+    border-radius: 0.25rem;
+    padding: 10px 20px;
+    text-decoration: none;
+    display: inline-block;
   }
   
   .custom-save-btn:hover {
@@ -61,4 +65,20 @@
   .breadcrumb-item + .breadcrumb-item::before {
     content: ''; /* remove default separation "/" */
   }
+
+  /* 控制在线选项的样式 */
+.border {
+  border: 1px solid #ced4da; /* Bootstrap 默认边框色 */
+  border-radius: 4px;
+  padding: 10px;
+}
+
+.form-control {
+  width: 100%;
+}
+
+.ms-3 {
+  margin-left: 1rem;
+}
+
   

@@ -3,8 +3,18 @@ import { IoCalendarOutline } from "react-icons/io5";
 import { LiaBookSolid, LiaCogSolid } from "react-icons/lia";
 import { FaInbox, FaRegCircleUser } from "react-icons/fa6";
 import { NavLink } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 export default function KanbasNavigation() {
+  const { pathname } = useLocation();
+  const links = [
+    { label: "Dashboard", path: "/Kanbas/Dashboard", icon: AiOutlineDashboard },
+    { label: "Courses",   path: "/Kanbas/Dashboard", icon: LiaBookSolid },
+    { label: "Calendar",  path: "/Kanbas/Calendar",  icon: IoCalendarOutline },
+    { label: "Inbox",     path: "/Kanbas/Inbox",     icon: FaInbox },
+    { label: "Labs",      path: "/Labs",             icon: LiaCogSolid },
+  ];
+
   return (
     <div
       id="wd-kanbas-navigation"
@@ -23,88 +33,23 @@ export default function KanbasNavigation() {
       </a>
       <br />
 
-      {/* Account Link */}
-      <NavLink
-        to="/Kanbas/Account"
-        id="wd-account-link"
-        className={({ isActive }) =>
-          isActive ? "list-group-item text-center border-0 bg-white text-danger" : "list-group-item text-center border-0 bg-black text-white"
-        }
-      >
-        <FaRegCircleUser className="fs-1" />
+      {/* Navigate to Account */}
+      <Link to="/Kanbas/Account" className={`list-group-item text-center border-0 bg-black
+            ${pathname.includes("Account") ? "bg-white text-danger" : "bg-black text-white"}`}>
+        <FaRegCircleUser className={`fs-1 ${pathname.includes("Account") ? "text-danger" : "text-white"}`} />
         <br />
         Account
-      </NavLink>
-      <br />
+      </Link>
 
-      {/* Dashboard Link */}
-      <NavLink
-        to="/Kanbas/Dashboard"
-        id="wd-dashboard-link"
-        className={({ isActive }) =>
-          isActive ? "list-group-item text-center border-0 bg-white text-danger" : "list-group-item text-center border-0 bg-black text-white"
-        }
-      >
-        <AiOutlineDashboard className="fs-1" />
-        <br />
-        Dashboard
-      </NavLink>
-      <br />
-
-      {/* Courses Link */}
-      <NavLink
-        to="/Kanbas/Courses"
-        id="wd-course-link"
-        className={({ isActive }) =>
-          isActive ? "list-group-item text-center border-0 bg-white text-danger" : "list-group-item text-center border-0 bg-black text-white"
-        }
-      >
-        <LiaBookSolid className="fs-1" />
-        <br />
-        Courses
-      </NavLink>
-      <br />
-
-      {/* Calendar Link */}
-      <NavLink
-        to="/Kanbas/Calendar"
-        id="wd-calendar-link"
-        className={({ isActive }) =>
-          isActive ? "list-group-item text-center border-0 bg-white text-danger" : "list-group-item text-center border-0 bg-black text-white"
-        }
-      >
-        <IoCalendarOutline className="fs-1" />
-        <br />
-        Calendar
-      </NavLink>
-      <br />
-
-      {/* Inbox Link */}
-      <NavLink
-        to="/Kanbas/Inbox"
-        id="wd-inbox-link"
-        className={({ isActive }) =>
-          isActive ? "list-group-item text-center border-0 bg-white text-danger" : "list-group-item text-center border-0 bg-black text-white"
-        }
-      >
-        <FaInbox className="fs-1" />
-        <br />
-        Inbox
-      </NavLink>
-      <br />
-
-      {/* Settings Link */}
-      <NavLink
-        to="/Kanbas/Settings"
-        id="wd-settings-link"
-        className={({ isActive }) =>
-          isActive ? "list-group-item text-center border-0 bg-white text-danger" : "list-group-item text-center border-0 bg-black text-white"
-        }
-      >
-        <LiaCogSolid className="fs-1" />
-        <br />
-        Settings
-      </NavLink>
+      {/* Dynamic Link */}
+      {links.map((link) => (
+        <Link key={link.path} to={link.path} className={`list-group-item bg-black text-center border-0
+              ${pathname.includes(link.label) ? "text-danger bg-white" : "text-white bg-black"}`}>
+          {link.icon({ className: "fs-1 text-danger"})}
+          <br />
+          {link.label}
+        </Link>
+      ))}
     </div>
   );
 }
