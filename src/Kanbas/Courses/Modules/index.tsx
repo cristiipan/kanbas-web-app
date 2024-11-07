@@ -10,13 +10,15 @@ import * as db from "../../Database";
 export default function Modules() {
     const { cid } = useParams();
     const dispatch = useDispatch();
-    const modules = useSelector((state: any) => 
+
+    // 获取当前模块信息
+    const modules = useSelector((state: any) =>
         state.modulesReducer.modules.filter((module: any) => module.course === cid)
     );
 
     // 获取当前用户信息
-    const currentUser = db.users.find(user => user._id === "1") || { role: "FACULTY" }; // 默认为教师角色
-
+    const { currentUser } = useSelector((state: any) => state.accountReducer);
+    
     // 模块名称的状态，用于新增或编辑模块
     const [moduleName, setModuleName] = useState<string>("");
 
@@ -54,7 +56,8 @@ export default function Modules() {
 
     return (
         <div>
-            {currentUser.role === "FACULTY" && (
+            {/* 只有 "FACULTY" 角色的用户可以看到的内容 */}
+            {currentUser?.role === "FACULTY" && (
                 <>
                     <ModulesControls
                         moduleName={moduleName}
@@ -85,7 +88,8 @@ export default function Modules() {
                                     />
                                 )}
                             </div>
-                            {currentUser.role === "FACULTY" && (
+                            {/* 只有 "FACULTY" 角色的用户可以看到的模块控制按钮 */}
+                            {currentUser?.role === "FACULTY" && (
                                 <ModuleControlButtons
                                     moduleId={module._id}
                                     deleteModule={handleDeleteModule}
