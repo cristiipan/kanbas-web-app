@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { FaSearch, FaPlus, FaEllipsisV } from "react-icons/fa";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { FaSearch, FaPlus, FaEllipsisV, FaTrash } from "react-icons/fa";
 import { BsStack, BsCheckCircle, BsThreeDotsVertical } from "react-icons/bs";
-import { Badge, Dropdown } from "react-bootstrap";
-import CoursesNavigation from "../Navigation";
+import { Badge, Dropdown, Modal, Button } from "react-bootstrap";
 import * as db from "../../Database";
+import { deleteAssignment } from "./reducer"; // 导入删除作业的 action
 import './Assignments.css';
 
 interface Assignment {
@@ -14,35 +15,60 @@ interface Assignment {
 }
 
 export default function Assignments() {
-  const { cid } = useParams();  // Retrieve course ID from the URL
+  const { cid } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [assignments, setAssignments] = useState<Assignment[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");  // Search term
-  const [selectedAssignment, setSelectedAssignment] = useState<string>("Assignments");  // Dropdown value
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedAssignment, setSelectedAssignment] = useState<string>("Assignments");
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [assignmentToDelete, setAssignmentToDelete] = useState<Assignment | null>(null);
+
+  // 获取当前用户信息
+  const { currentUser } = useSelector((state: any) => state.accountReducer);
+  const allAssignments = useSelector((state: any) => state.assignmentsReducer.assignments);
 
   useEffect(() => {
-    console.log("Current cid:", cid); // Log the current course ID
-
     if (!cid) {
-      const firstCourse = db.assignments[0]?.course;
+      const firstCourse = allAssignments[0]?.course;
       if (firstCourse) {
         navigate(`/Kanbas/Courses/${firstCourse}/Assignments`);
       } else {
         console.error("No courses found in the database");
       }
     } else {
-      const filteredAssignments = db.assignments.filter(
+      const filteredAssignments = allAssignments.filter(
         (assignment: Assignment) => assignment.course === cid
       );
-      console.log("Filtered Assignments:", filteredAssignments); // Log filtered assignments
       setAssignments(filteredAssignments);
     }
-  }, [cid, navigate]);
+  }, [cid, navigate, allAssignments]);
 
   const handleSelect = (assignmentTitle: string | null) => {
     if (assignmentTitle) {
       setSelectedAssignment(assignmentTitle);
     }
+  };
+
+  // 删除确认对话框
+  const handleDeleteClick = (assignment: Assignment) => {
+    setAssignmentToDelete(assignment);
+    setShowModal(true);
+  };
+
+  // 确认删除
+  const handleConfirmDelete = () => {
+    if (assignmentToDelete) {
+      dispatch(deleteAssignment(assignmentToDelete._id)); // 调用 action 删除作业
+      setShowModal(false);
+      setAssignmentToDelete(null);
+    }
+  };
+
+  // 取消删除
+  const handleCancelDelete = () => {
+    setShowModal(false);
+    setAssignmentToDelete(null);
   };
 
   return (
@@ -59,14 +85,21 @@ export default function Assignments() {
             onChange={(e) => setSearchTerm(e.target.value)} 
           />
         </div>
-        <div>
-          <button id="wd-add-assignment-group" className="btn btn-outline-secondary me-2">
-            <FaPlus className="me-2" /> Group
-          </button>
-          <button id="wd-add-assignment" className="btn btn-danger">
-            <FaPlus className="me-2" /> Assignment
-          </button>
-        </div>
+
+        {/* 只有 "FACULTY" 角色的用户可以看到添加作业和分组按钮 */}
+        {currentUser?.role === "FACULTY" && (
+          <div>
+            <button id="wd-add-assignment-group" className="btn btn-outline-secondary me-2">
+              <FaPlus className="me-2" /> Group
+            </button>
+            <Link
+              to={`/Kanbas/Courses/${cid}/Assignments/Editor`}
+              className="btn btn-primary"
+            >
+              Add Assignment
+            </Link>
+          </div>
+        )}
       </div>
 
       {/* Assignments Dropdown */}
@@ -85,16 +118,6 @@ export default function Assignments() {
             ))}
           </Dropdown.Menu>
         </Dropdown>
-
-        <div className="d-flex align-items-center">
-          <Badge pill bg="light" text="dark" className="me-2 border fs-5">
-            40% of Total
-          </Badge>
-          <div className="d-flex align-items-center">
-            <FaPlus className="fs-5 me-2" style={{ cursor: 'pointer' }} />
-            <BsThreeDotsVertical className="fs-5" style={{ cursor: 'pointer' }} />
-          </div>
-        </div>
       </div>
 
       {assignments.length > 0 ? (
@@ -109,22 +132,32 @@ export default function Assignments() {
                 <BsStack className="text-success fs-3" />
               </div>
               <div>
-                <a
-                  className="wd-assignment-link text-decoration-none text-dark fw-bold fs-5"
-                  href={`#/Kanbas/Courses/${cid}/Assignments/${assignment._id}`}
+                <Link
+                  to={`/Kanbas/Courses/${cid}/Assignments/Editor/${assignment._id}`}
+                  className="assignment-name"
                 >
                   {assignment.title}
-                </a>
+                </Link>
                 <p className="mb-0 text-muted">
                   Multiple Modules | <strong>Not available until</strong> TBD | <strong>Due</strong> TBD | 100pts
                 </p>
               </div>
-              <div className="ms-auto">
-                <BsCheckCircle className="text-success fs-4" />
-              </div>
-              <div className="ms-3">
-                <BsThreeDotsVertical />
-              </div>
+
+              {/* 只有 "FACULTY" 角色的用户可以看到右侧的编辑和删除按钮 */}
+              {currentUser?.role === "FACULTY" && (
+                <>
+                  <div className="ms-auto">
+                    <BsCheckCircle className="text-success fs-4" />
+                  </div>
+                  <div className="ms-3">
+                    <FaTrash
+                      className="text-danger fs-4"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handleDeleteClick(assignment)}
+                    />
+                  </div>
+                </>
+              )}
             </li>
           ))}
         </ul>
@@ -136,9 +169,25 @@ export default function Assignments() {
             "No course selected. Please choose a course."
           )}
           <br />
-          Total assignments in database: {db.assignments.length}
+          Total assignments in database: {allAssignments.length}
         </div>
       )}
+
+      {/* 确认删除的对话框 */}
+      <Modal show={showModal} onHide={handleCancelDelete}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Delete</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Are you sure you want to delete this assignment?</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCancelDelete}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={handleConfirmDelete}>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

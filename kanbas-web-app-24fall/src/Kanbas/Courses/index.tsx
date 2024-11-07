@@ -1,46 +1,41 @@
-import CoursesNavigation from "./Navigation";
+import React from "react";
+import { useParams, Link, Routes, Route } from "react-router-dom";
+import CourseNavigation from "./Navigation";
+import BreadcrumbNavigation from "./Navigation/index";
+import Assignments from "./Assignments";
+import AssignmentEditor from "./Assignments/Editor";
 import Modules from "./Modules";
 import Home from "./Home";
-import AssignmentEditor from "./Assignments/Editor";
-import Assignments from "./Assignments";
-import CourseStatus from "./Home/Status";
-import { Navigate, Route, Routes, useParams, useLocation } from "react-router";
-import { FaAlignJustify } from 'react-icons/fa';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import PeopleTable from "./People/Table";
-import { courses } from "../Database";
+import "./index.css";
 
-export default function Courses() {
+function Courses({ courses }: { courses: any[] }) {
   const { cid } = useParams();
-  console.log("Current cid:", cid);
-  
   const course = courses.find((course) => course._id === cid);
-  const { pathname } = useLocation();
-  
-  return (
-    <div id="wd-courses" className="d-flex">
-      {/* side bar */}
-      <div style={{ width: '180px' }} className="d-none d-md-block">
-        {/* second side bar */}
-        <CoursesNavigation />
-      </div>
 
-      <div className="flex-fill">
-        <h2 className="text-danger">
-          <FaAlignJustify className="me-4 fs-4 mb-1" />
-          {course && course.name} &gt; {pathname.split("/")[4]}
-        </h2>
-        <hr />
-        <Routes>
-          {/* Define a base path for the course */}
-          <Route path="/" element={<Navigate to="Home" />} />
-          <Route path="Home" element={<Home />} />
-          <Route path="Modules" element={<Modules />} />
-          <Route path="Assignments/:assignmentId" element={<AssignmentEditor />} />
-          <Route path="Assignments" element={<Assignments />} />
-          <Route path="People" element={<PeopleTable />} />
-        </Routes>
+  return (
+    <div>
+      <div className="d-flex">
+        <div className="wd-course-navigation">
+          <CourseNavigation />
+        </div>
+        
+        <div className="flex-grow-1 p-4">
+          {/* 将面包屑导航移到这里，替换原来的课程标题 */}
+          <BreadcrumbNavigation />
+          
+          {/* Course Content */}
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="Home" element={<Home />} />
+            <Route path="Modules" element={<Modules />} />
+            <Route path="Assignments" element={<Assignments />} />
+            <Route path="Assignments/Editor" element={<AssignmentEditor />} />
+            <Route path="Assignments/Editor/:assignmentId" element={<AssignmentEditor />} />
+          </Routes>
+        </div>
       </div>
     </div>
   );
 }
+
+export default Courses;

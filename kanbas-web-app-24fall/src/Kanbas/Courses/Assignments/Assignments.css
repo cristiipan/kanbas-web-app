@@ -81,4 +81,14 @@
   margin-left: 1rem;
 }
 
+.assignment-name {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: black;
+  text-decoration: none;
+}
+
+.assignment-name:hover {
+  color: rgba(209, 6, 6, 0.77);
+}
   

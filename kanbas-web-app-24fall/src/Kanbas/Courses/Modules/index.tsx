@@ -1,94 +1,113 @@
+import React, { useState } from "react";
 import ModulesControls from "./ModulesControls";
-import { BsGripVertical } from "react-icons/bs";
 import ModuleControlButtons from "./ModuleControlButtons";
-import LessonControlButtons from "./LessonControlButtons";
+import { BsGripVertical } from "react-icons/bs";
 import { useParams } from "react-router";
+import { useSelector, useDispatch } from "react-redux";
+import { addModule, deleteModule, updateModule } from "./reducer";
 import * as db from "../../Database";
 
 export default function Modules() {
     const { cid } = useParams();
-    const modules = db.modules;
+    const dispatch = useDispatch();
+    const modules = useSelector((state: any) => 
+        state.modulesReducer.modules.filter((module: any) => module.course === cid)
+    );
+
+    // 获取当前用户信息
+    const currentUser = db.users.find(user => user._id === "1") || { role: "FACULTY" }; // 默认为教师角色
+
+    // 模块名称的状态，用于新增或编辑模块
+    const [moduleName, setModuleName] = useState<string>("");
+
+    // 添加模块的函数
+    const handleAddModule = () => {
+        if (!moduleName.trim()) return;
+        const newModule = {
+            _id: new Date().getTime().toString(),
+            name: moduleName,
+            course: cid,
+            lessons: [],
+            editing: false
+        };
+        dispatch(addModule(newModule));
+        setModuleName("");
+    };
+
+    // 删除模块的函数
+    const handleDeleteModule = (moduleId: string) => {
+        dispatch(deleteModule(moduleId));
+    };
+
+    // 编辑模块的函数
+    const handleEditModule = (moduleId: string) => {
+        const module = modules.find((m: any) => m._id === moduleId);
+        if (module) {
+            dispatch(updateModule({ ...module, editing: true }));
+        }
+    };
+
+    // 更新模块的函数
+    const handleUpdateModule = (module: any) => {
+        dispatch(updateModule(module));
+    };
 
     return (
-      <div>
-        <ModulesControls /><br /><br /><br /><br />
+        <div>
+            {currentUser.role === "FACULTY" && (
+                <>
+                    <ModulesControls
+                        moduleName={moduleName}
+                        setModuleName={setModuleName}
+                        addModule={handleAddModule}
+                    />
+                    <br /><br /><br /><br />
+                </>
+            )}
 
-        {/* Dynamically rendered Modules */}
-        <ul id="wd-modules" className="list-group rounded-0">
-          {modules
-            .filter((module: any) => module.course === cid) // 根据课程 ID 筛选模块
-            .map((module: any) => (
-              <li key={module.name} className="wd-module list-group-item p-0 mb-5 fs-5 border-gray">
-                <div className="wd-title p-3 ps-2 bg-secondary">
-                  <BsGripVertical className="me-2 fs-3" />
-                  {module.name} {/* 动态渲染模块名称 */}
-                  <ModuleControlButtons />
-                </div>
-                {/* 动态渲染课程列表 */}
-                {module.lessons && (
-                  <ul className="wd-lessons list-group rounded-0">
-                    {module.lessons.map((lesson: any) => (
-                      <li key={lesson.name} className="wd-lesson list-group-item p-3 ps-1">
-                        <BsGripVertical className="me-2 fs-3" />
-                        {lesson.name} {/* 动态渲染课程名称 */}
-                        <LessonControlButtons />
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </li>
-          ))}
-        </ul>
-      </div>
-  );
+            <ul id="wd-modules" className="list-group rounded-0">
+                {modules.map((module: any) => (
+                    <li key={module._id} className="wd-module list-group-item p-0 mb-5 fs-5 border-gray">
+                        <div className="wd-title p-3 ps-2 bg-secondary d-flex align-items-center justify-content-between">
+                            <div>
+                                <BsGripVertical className="me-2 fs-3" />
+                                {!module.editing && module.name}
+                                {module.editing && (
+                                    <input
+                                        className="form-control w-50 d-inline-block"
+                                        onChange={(e) => handleUpdateModule({ ...module, name: e.target.value })}
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter") {
+                                                handleUpdateModule({ ...module, editing: false });
+                                            }
+                                        }}
+                                        defaultValue={module.name}
+                                    />
+                                )}
+                            </div>
+                            {currentUser.role === "FACULTY" && (
+                                <ModuleControlButtons
+                                    moduleId={module._id}
+                                    deleteModule={handleDeleteModule}
+                                    editModule={handleEditModule}
+                                />
+                            )}
+                        </div>
+                        {module.lessons && (
+                            <ul className="wd-lessons list-group rounded-0">
+                                {module.lessons.map((lesson: any) => (
+                                    <li key={lesson._id} className="wd-lesson list-group-item p-3 ps-1 d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <BsGripVertical className="me-2 fs-3" />
+                                            {lesson.name}
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
 }
-  //       <ul id="wd-modules" className="list-group rounded-0">
-  //         {/* Week 1 module */}
-  //         <li className="wd-module list-group-item p-0 mb-5 fs-5 border-gray">
-  //           <div className="wd-title p-3 ps-2 bg-secondary">
-  //           <BsGripVertical className="me-2 fs-3" />
-  //           Week 1
-  //           <ModuleControlButtons />
-  //           </div>
-  //           <ul className="wd-lessons list-group rounded-0">
-  //             <li className="wd-lesson list-group-item p-3 ps-1">
-  //               <BsGripVertical className="me-2 fs-3" />
-  //               LEARNING OBJECTIVES
-  //               <LessonControlButtons />
-  //             </li>
-  //             <li className="wd-lesson list-group-item p-3 ps-1">
-  //               <BsGripVertical className="me-2 fs-3" />
-  //               Introduction to the course
-  //               <LessonControlButtons />
-  //             </li>
-  //             <li className="wd-lesson list-group-item p-3 ps-1">
-  //               <BsGripVertical className="me-2 fs-3" />
-  //               Learn what is Web Development
-  //               <LessonControlButtons />
-  //             </li>
-  //             <li className="wd-lesson list-group-item p-3 ps-1"> LESSON 1 </li>
-  //             <li className="wd-lesson list-group-item p-3 ps-1"> LESSON 2 </li>
-  //           </ul>
-  //         </li>
-
-  //         {/* Week 2 module */}
-  //         <li className="wd-module list-group-item p-0 mb-5 fs-5 border-gray">
-  //           <div className="wd-title p-3 ps-2 bg-secondary"> 
-  //           <BsGripVertical className="me-2 fs-3" />
-  //           Week 2 
-  //           <ModuleControlButtons />
-  //           </div>
-  //           <ul className="wd-lessons list-group rounded-0">
-  //             <li className="wd-lesson list-group-item p-3 ps-1">
-  //               <BsGripVertical className="me-2 fs-3" />
-  //               LEARNING OBJECTIVES
-  //               <LessonControlButtons />
-  //             </li>
-  //             <li className="wd-lesson list-group-item p-3 ps-1"> LESSON 1 </li>
-  //             <li className="wd-lesson list-group-item p-3 ps-1"> LESSON 2 </li>
-  //           </ul>
-  //         </li>
-  //       </ul>
-  //     </div>
-  // );}
-  
